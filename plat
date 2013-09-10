@@ -51,7 +51,7 @@ function get_solaris_version {
 #start detection 
 
 function usage {
-    printf >&2 "${0} [-a] [-n] [-p] [-v] [-c directory]\n"
+    printf >&2 "Usage: ${0} [-a] [-n] [-p] [-v] [-c directory]\n"
     printf >&2 "\t-a\t\tshow all fields\n"
     printf >&2 "\t-n\t\tshow operating system\n"
     printf >&2 "\t-p\t\tshow processor type\n"
@@ -59,7 +59,10 @@ function usage {
     exit 1
 }
 
-
+#default to printing all info if no options
+if [ "$#" -eq 0 ] ; then
+    PRINT_ALL=TRUE
+fi 
 
 while getopts "ac:hnvp" opt; do
     case ${opt} in
@@ -86,7 +89,6 @@ while getopts "ac:hnvp" opt; do
             ;; 
     esac
 done
-
 
 os_name=$(printf `uname -s`)
 
