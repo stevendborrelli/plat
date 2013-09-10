@@ -23,3 +23,9 @@ Fedora  19
 OSX     10.8
 Redhat  6.3
 ```
+
+##Other ways to get platform information:
+
+###Python
+
+```python -c 'import platform; print(platform.dist()[0:2])'```
