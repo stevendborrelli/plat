@@ -4,7 +4,27 @@ Unix and Linux systems do not have a standardized way of providing basic platfor
 `plat` will attempt to determine the operating system, version and chip architecture. 
 
 ##Usage
+```
+./plat [-a] [-n] [-p] [-v] [-c directory]
+        -a              show all fields
+        -n              show operating system
+        -p              show processor type
+        -v              show version
+```
 
+Get the name of the operating system: 
+```
+./plat -n  
+osx
+```
+
+Get the version of the operating system:
+```
+./plat -v 
+10.8.4
+```
+
+Show all fields (default): 
 ```
 ./plat
 
