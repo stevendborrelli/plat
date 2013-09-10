@@ -1,0 +1,14 @@
+System Model: IBM,7025-F50
+Machine Serial Number: 1025778
+Processor Type: PowerPC_604
+Number Of Processors: 2
+Processor Clock Speed: 332 MHz
+CPU Type: 32-bit
+Kernel Type: 32-bit
+LPAR Info: -1 NULL
+Memory Size: 512 MB
+Good Memory Size: 512 MB
+Firmware Version: IBM,L02113
+Console Login: enable
+Auto Restart: false
+Full Core: false
