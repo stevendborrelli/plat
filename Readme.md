@@ -13,6 +13,10 @@ PROCESSOR=x86_64
 
 ```
 
+###Running off of github 
+
+```/usr/bin/curl -s https://raw.github.com/stevendborrelli/plat/master/plat | bash```
+
 ##Supported platforms
 `plat` was tested on:
 
