@@ -6,6 +6,11 @@ platform=unknown
 platform_version=unknown
 processor=unknown
 
+#change the location where we look for config files. Used for
+#testing. Change this by passing the the -c option to the script.  
+CONF_DIR=/etc/
+
+
 #TODO: test this
 function get_aix_version {
     platform="aix"
@@ -22,15 +27,15 @@ function get_osx_version {
 #inspired from the chef install.sh script
 function get_linux_distro {
     # /etc/os-release is meant to be the new Linux standard...
-    if [ -f "/etc/os-release" ]; then
-        platform=$(grep ^NAME /etc/os-release | cut -d "=" -f 2 | tr '[A-Z]' '[a-z]' | tr -d '\"') 
-        platform_version=$(grep ^VERSION_ID /etc/os-release | cut -d "=" -f 2 | tr '[A-Z]' '[a-z]' | tr -d '\"')
-    elif [ -f "/etc/redhat-release" ]; then #redhat/centos
-        platform=$(sed 's/^\(.\+\) release.*/\1/' /etc/redhat-release | tr '[A-Z]' '[a-z]' | tr ' ' '_' )
-        platform_version=$(sed 's/^.\+ release \([.0-9]\+\).*/\1/' /etc/redhat-release)
-    elif [ -f "/etc/debian_version" ]; then
+    if [ -f "${CONF_DIR}/os-release" ]; then
+        platform=$(grep ^NAME ${CONF_DIR}/os-release | cut -d "=" -f 2 | tr '[A-Z]' '[a-z]' | tr -d '\"') 
+        platform_version=$(grep ^VERSION_ID ${CONF_DIR}/os-release | cut -d "=" -f 2 | tr '[A-Z]' '[a-z]' | tr -d '\"')
+    elif [ -f "${CONF_DIR}/redhat-release" ]; then #redhat/centos
+        platform=$(sed 's/^\(.\+\) release.*/\1/' ${CONF_DIR}/redhat-release | tr '[A-Z]' '[a-z]' | tr ' ' '_' )
+        platform_version=$(sed 's/^.\+ release \([.0-9]\+\).*/\1/' ${CONF_DIR}/redhat-release)
+    elif [ -f "${CONF_DIR}/debian_version" ]; then
         platform="debian"
-        platform_version=$(cat /etc/debian_version)
+        platform_version=$(cat ${CONF_DIR}/debian_version)
     fi 
 
     processor=$(printf `uname -m`)
@@ -44,6 +49,45 @@ function get_solaris_version {
 }
 
 #start detection 
+
+function usage {
+    printf >&2 "${0} [-a] [-n] [-p] [-v] [-c directory]\n"
+    printf >&2 "\t-a\t\tshow all fields\n"
+    printf >&2 "\t-n\t\tshow operating system\n"
+    printf >&2 "\t-p\t\tshow processor type\n"
+    printf >&2 "\t-v\t\tshow version\n"
+    exit 1
+}
+
+
+
+while getopts "ac:hnvp" opt; do
+    case ${opt} in
+        c)
+            CONF_DIR=${OPTARG}
+            ;;
+        h)
+            usage
+            ;;
+        n)
+            PRINT_NAME=TRUE 
+            ;;
+        v) 
+            PRINT_VERSION=TRUE
+            ;;
+        p)
+            PRINT_PROCESSOR=TRUE
+            ;;
+        a)
+            PRINT_ALL=TRUE
+            ;;
+        \?)
+            usage
+            ;; 
+    esac
+done
+
+
 os_name=$(printf `uname -s`)
 
 case ${os_name} in 
@@ -65,6 +109,12 @@ case ${os_name} in
         ;;
 esac 
 
-echo "NAME=${platform}" 
-echo "VERSION_ID=${platform_version}"
-echo "PROCESSOR=${processor}"
+if [ "${PRINT_ALL}" ==  "TRUE" ] ; then
+    echo "NAME=${platform}" 
+    echo "VERSION_ID=${platform_version}"
+    echo "PROCESSOR=${processor}"
+else  
+    [[ ${PRINT_NAME} = "TRUE" ]] && printf "${platform}\n"
+    [[ ${PRINT_VERSION} = "TRUE" ]] && printf "${platform_version}\n"
+    [[ ${PRINT_PROCESSOR} = "TRUE" ]] && printf "${processor}\n"
+fi
