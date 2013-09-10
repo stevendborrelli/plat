@@ -1,0 +1,70 @@
+#!/bin/bash
+
+# detect various flavors of *ix
+
+platform=unknown
+platform_version=unknown
+processor=unknown
+
+#TODO: test this
+function get_aix_version {
+    platform="aix"
+    platform_version=$(oslevel) 
+    processor=$(grep "^Processor Type:" file.txt | cut -d ' ' -f 3) 
+}
+
+function get_osx_version {
+    platform="osx"
+    platform_version=$(sw_vers | awk '/^ProductVersion:/ { print $2 }')
+    processor=$(printf `uname -m`)
+}
+
+#inspired from the chef install.sh script
+function get_linux_distro {
+    # /etc/os-release is meant to be the new Linux standard...
+    if [ -f "/etc/os-release" ]; then
+        platform=$(grep ^NAME /etc/os-release | cut -d "=" -f 2 | tr '[A-Z]' '[a-z]' | tr -d '\"') 
+        platform_version=$(grep ^VERSION_ID /etc/os-release | cut -d "=" -f 2 | tr '[A-Z]' '[a-z]' | tr -d '\"')
+    elif [ -f "/etc/redhat-release" ]; then #redhat/centos
+        platform=$(sed 's/^\(.\+\) release.*/\1/' /etc/redhat-release | tr '[A-Z]' '[a-z]' | tr ' ' '_' )
+        platform_version=$(sed 's/^.\+ release \([.0-9]\+\).*/\1/' /etc/redhat-release)
+    elif [ -f "/etc/debian_version" ]; then
+        platform="debian"
+        platform_version=$(cat /etc/debian_version)
+    fi 
+
+    processor=$(printf `uname -m`)
+}
+
+#TODO: test this
+function get_solaris_version {
+    platform="solaris2"
+    platform_version=$(/usr/bin/uname -r)
+    processor=$(/usr/bin/uname -p)
+}
+
+#start detection 
+os_name=$(printf `uname -s`)
+
+case ${os_name} in 
+    AIX)
+        get_aix_version
+        ;;
+    Linux) 
+        get_linux_distro
+        ;;
+    Darwin)
+        get_osx_version 
+        ;;
+    SunOS)
+        get_solaris_version 
+        ;;
+    *)
+        echo "Error: Unsupported operating system"
+        exit 1
+        ;;
+esac 
+
+echo "NAME=${platform}" 
+echo "VERSION_ID=${platform_version}"
+echo "PROCESSOR=${processor}"
