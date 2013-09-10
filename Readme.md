@@ -1,6 +1,7 @@
 ##About 
+Unix and Linux systems do not have a standardized way of providing basic platform information.
 
-`plat` will attempt to determine the operating system and version. 
+`plat` will attempt to determine the operating system, version and chip architecture. 
 
 ##Usage
 
@@ -28,8 +29,10 @@ OSX     10.8
 Redhat  6.3
 ```
 
-##Other ways to get platform information:
+##Other ways to get platform information
 
 ###Python
 
 ```python -c 'import platform; print(platform.dist()[0:2])'```
+
+This library has given me some inconsistent results, so it is not used in plat. 
